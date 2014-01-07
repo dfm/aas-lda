@@ -20,8 +20,11 @@ if __name__ == "__main__":
         pre_analysis("abstracts.json", "parsed.txt")
         sys.exit(0)
 
+    outdir = "results"
+
     print("Parsing abstracts")
     reader = AASReader("parsed.txt")
+    pickle.dump(reader, open(os.path.join(outdir, "reader.pkl"), "w"), -1)
 
     valid = reader.validation(300)
     nvalid = sum([len(s) for s in valid])
@@ -32,13 +35,12 @@ if __name__ == "__main__":
     p = model.elbo(valid, pool=pool)
 
     # Run EM.
-    outdir = "results"
     fn = os.path.join(outdir, "model.{0:04d}.pkl")
     outfn = os.path.join(outdir, "convergence.txt")
     open(outfn, "w").close()
     tot = 0.0
-    nxt = 2.0
-    batch = 512
+    nxt = 0.1
+    batch = 1024
     ndocs = len(reader.abstracts) + len(valid)
     strt = time.time()
     for i, (n, lam) in enumerate(model.em(reader, ndocs=ndocs, pool=pool,

@@ -46,7 +46,8 @@ class AASReader(object):
             if len(cols) > 1:
                 self.abstracts[cols[0]] = cols[1:]
         self.compute_vocab()
-        self.abstracts = map(self.parse, self.abstracts.values())
+        self.ids, docs = zip(*(self.abstracts.items()))
+        self.abstracts = map(self.parse, docs)
 
         self.validation_set = []
 
